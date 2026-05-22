@@ -5,7 +5,7 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1.0">
 
-<title>Birthday AR Filter</title>
+<title>Birthday AR Celebration</title>
 
 <style>
 
@@ -21,7 +21,7 @@ body{
     background:black;
 }
 
-/* VIDEO */
+/* CAMERA */
 
 video{
     position:fixed;
@@ -30,68 +30,88 @@ video{
     height:100%;
     object-fit:cover;
     transform:scaleX(-1);
+
     filter:
     brightness(1.05)
     contrast(1.05)
-    saturate(1.15)
-    blur(.3px);
+    saturate(1.15);
 }
 
-/* BEAUTY GLOW */
+/* BEAUTY FILTER */
 
 #beautyGlow{
     position:fixed;
     inset:0;
+    pointer-events:none;
+    z-index:5;
+
     background:
     radial-gradient(
     circle,
     rgba(255,182,193,.08),
     transparent 60%
     );
-
-    pointer-events:none;
-    z-index:5;
 }
 
 /* MESSAGE */
 
 #message{
     position:fixed;
-    top:30px;
+    top:35px;
     width:100%;
     text-align:center;
     color:white;
     font-size:2rem;
     font-weight:bold;
-    z-index:100;
+    z-index:200;
     text-shadow:0 0 15px black;
 }
 
-/* FACE SPARKLES */
+/* TOP CELEBRATION */
 
-.sparkle{
+#topDecor{
     position:fixed;
-    font-size:20px;
-    animation:sparkleAnim 1s linear infinite;
-    z-index:50;
+    top:0;
+    left:0;
+    width:100%;
+    height:120px;
+    z-index:150;
     pointer-events:none;
+    display:none;
+    overflow:hidden;
 }
 
-@keyframes sparkleAnim{
+.partyLine{
+    position:absolute;
+    top:10px;
+    width:100%;
+    text-align:center;
+    font-size:45px;
+
+    animation:
+    swing 2s infinite ease-in-out;
+}
+
+@keyframes swing{
 
     0%{
-        opacity:0;
-        transform:translateY(0) scale(0);
+        transform:rotate(0deg);
+    }
+
+    25%{
+        transform:rotate(1deg);
     }
 
     50%{
-        opacity:1;
-        transform:translateY(-10px) scale(1);
+        transform:rotate(0deg);
+    }
+
+    75%{
+        transform:rotate(-1deg);
     }
 
     100%{
-        opacity:0;
-        transform:translateY(-20px) scale(0);
+        transform:rotate(0deg);
     }
 }
 
@@ -100,15 +120,54 @@ video{
 .balloon{
     position:fixed;
     bottom:-150px;
-    font-size:60px;
-    animation:floatUp linear infinite;
-    z-index:30;
+    font-size:65px;
+    z-index:20;
+
+    animation:
+    floatUp linear infinite;
 }
 
 @keyframes floatUp{
 
     to{
-        transform:translateY(-120vh);
+        transform:
+        translateY(-120vh);
+    }
+}
+
+/* FACE SPARKLES */
+
+.sparkle{
+    position:fixed;
+    font-size:22px;
+    z-index:30;
+    pointer-events:none;
+
+    animation:
+    sparkleAnim 1s linear forwards;
+}
+
+@keyframes sparkleAnim{
+
+    0%{
+        opacity:0;
+        transform:
+        translateY(0)
+        scale(0);
+    }
+
+    50%{
+        opacity:1;
+        transform:
+        translateY(-10px)
+        scale(1);
+    }
+
+    100%{
+        opacity:0;
+        transform:
+        translateY(-20px)
+        scale(0);
     }
 }
 
@@ -116,68 +175,88 @@ video{
 
 #cakeContainer{
     position:fixed;
-    bottom:25px;
+    bottom:120px;
     left:50%;
     transform:translateX(-50%);
     z-index:100;
     display:none;
-    animation:floatCake 2s ease-in-out infinite;
+
+    animation:
+    floatCake 2s ease-in-out infinite;
 }
 
 @keyframes floatCake{
 
     0%{
-        transform:translateX(-50%)
+        transform:
+        translateX(-50%)
         translateY(0);
     }
 
     50%{
-        transform:translateX(-50%)
-        translateY(-10px);
+        transform:
+        translateX(-50%)
+        translateY(-12px);
     }
 
     100%{
-        transform:translateX(-50%)
+        transform:
+        translateX(-50%)
         translateY(0);
     }
 }
 
+/* CANDLES */
+
 .candles{
     display:flex;
     justify-content:center;
-    gap:30px;
+    gap:40px;
     margin-bottom:-10px;
+    position:relative;
+    z-index:5;
 }
 
 .candle{
-    width:14px;
-    height:55px;
+    width:16px;
+    height:70px;
     background:white;
     border-radius:5px;
     position:relative;
 }
 
+/* FLAMES */
+
 .flame{
-    width:18px;
-    height:22px;
+    width:22px;
+    height:28px;
     background:orange;
     border-radius:50%;
     position:absolute;
-    top:-20px;
+    top:-25px;
     left:50%;
     transform:translateX(-50%);
-    box-shadow:0 0 20px yellow;
-    animation:flicker .15s infinite alternate;
+
+    box-shadow:
+    0 0 20px yellow,
+    0 0 40px orange;
+
+    animation:
+    flicker .12s infinite alternate;
 }
 
 @keyframes flicker{
 
     from{
-        transform:translateX(-50%) scale(1);
+        transform:
+        translateX(-50%)
+        scale(1);
     }
 
     to{
-        transform:translateX(-50%) scale(1.2);
+        transform:
+        translateX(-50%)
+        scale(1.2);
     }
 }
 
@@ -187,67 +266,149 @@ video{
     position:absolute;
     width:20px;
     height:20px;
-    background:rgba(200,200,200,.5);
+
+    background:
+    rgba(220,220,220,.6);
+
     border-radius:50%;
-    animation:smokeUp 2s linear forwards;
+
+    animation:
+    smokeUp 2s linear forwards;
 }
 
 @keyframes smokeUp{
 
     to{
         transform:
-        translateY(-100px)
+        translateY(-120px)
         scale(2);
 
         opacity:0;
     }
 }
 
-/* CAKE */
+/* DOUBLE LAYER CAKE */
 
 #cake{
-    width:300px;
-    height:140px;
-    background:
-    linear-gradient(
-    to bottom,
-    #ff9ecb,
-    #ff5ca8
-    );
-
-    border-radius:25px;
-    border-bottom:10px solid #ff2f92;
     position:relative;
+    width:360px;
+    height:240px;
 }
+
+/* LOWER LAYER */
 
 #cake::before{
     content:"";
     position:absolute;
-    top:0;
+    bottom:0;
     left:0;
-    width:100%;
-    height:35px;
-    background:white;
-    border-radius:50%;
+
+    width:360px;
+    height:130px;
+
+    background:
+    linear-gradient(
+    to bottom,
+    #ff9ecb,
+    #ff4f9d
+    );
+
+    border-radius:25px;
+
+    border-bottom:
+    12px solid #ff187b;
+
+    box-shadow:
+    0 0 30px rgba(255,105,180,.5);
 }
 
-/* HAPPY BIRTHDAY */
+/* TOP LAYER */
+
+#cake::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:50%;
+
+    transform:
+    translateX(-50%);
+
+    width:240px;
+    height:100px;
+
+    background:
+    linear-gradient(
+    to bottom,
+    #ffd1e6,
+    #ff82bb
+    );
+
+    border-radius:22px;
+
+    border-bottom:
+    10px solid #ff3b8b;
+}
+
+/* CREAM */
+
+.cakeCream1{
+    position:absolute;
+    top:85px;
+    left:0;
+
+    width:360px;
+    height:28px;
+
+    background:white;
+
+    border-radius:50%;
+    z-index:3;
+}
+
+.cakeCream2{
+    position:absolute;
+    top:0;
+    left:50%;
+
+    transform:
+    translateX(-50%);
+
+    width:240px;
+    height:24px;
+
+    background:white;
+
+    border-radius:50%;
+    z-index:3;
+}
+
+/* BIRTHDAY TEXT */
 
 #birthday{
     position:fixed;
     top:50%;
     left:50%;
-    transform:translate(-50%,-50%);
+
+    transform:
+    translate(-50%,-50%);
+
+    z-index:300;
+
     text-align:center;
     color:white;
+
     display:none;
-    z-index:300;
-    animation:pop 1s ease;
+
+    animation:
+    pop 1s ease;
 }
 
 #birthday h1{
     font-size:4rem;
-    text-shadow:0 0 25px hotpink;
+    line-height:1.2;
+
+    text-shadow:
+    0 0 25px hotpink;
 }
 
 #birthday p{
@@ -260,6 +421,7 @@ video{
         transform:
         translate(-50%,-50%)
         scale(0);
+
         opacity:0;
     }
 
@@ -267,6 +429,7 @@ video{
         transform:
         translate(-50%,-50%)
         scale(1);
+
         opacity:1;
     }
 }
@@ -278,8 +441,10 @@ video{
     width:12px;
     height:12px;
     top:-10px;
-    z-index:200;
-    animation:fall linear forwards;
+    z-index:250;
+
+    animation:
+    fall linear forwards;
 }
 
 @keyframes fall{
@@ -291,24 +456,31 @@ video{
     }
 }
 
-/* SELFIE BUTTON */
+/* CAPTURE BUTTON */
 
 #captureBtn{
     position:fixed;
     bottom:20px;
     right:20px;
-    z-index:400;
+    z-index:500;
+
     border:none;
+
     background:white;
     color:black;
-    padding:14px 18px;
+
+    padding:15px 20px;
+
     border-radius:50px;
+
     font-size:16px;
     font-weight:bold;
-    box-shadow:0 0 15px rgba(0,0,0,.4);
+
+    box-shadow:
+    0 0 20px rgba(0,0,0,.4);
 }
 
-/* CAPTURE IMAGE */
+/* HIDDEN CANVAS */
 
 #snapshot{
     display:none;
@@ -319,6 +491,8 @@ video{
 
 <body>
 
+<!-- VIDEO -->
+
 <video
 id="video"
 autoplay
@@ -326,12 +500,24 @@ playsinline
 muted>
 </video>
 
-<canvas id="snapshot"></canvas>
+<!-- BEAUTY FILTER -->
 
 <div id="beautyGlow"></div>
 
+<!-- MESSAGE -->
+
 <div id="message">
 Loading Camera...
+</div>
+
+<!-- TOP CELEBRATION -->
+
+<div id="topDecor">
+
+    <div class="partyLine">
+        🎉 ✨ 🎈 HAPPY BIRTHDAY 🎈 ✨ 🎉
+    </div>
+
 </div>
 
 <!-- BALLOONS -->
@@ -381,7 +567,13 @@ style="left:90%;animation-duration:13s;">
 
     </div>
 
-    <div id="cake"></div>
+    <div id="cake">
+
+        <div class="cakeCream1"></div>
+
+        <div class="cakeCream2"></div>
+
+    </div>
 
 </div>
 
@@ -391,7 +583,10 @@ style="left:90%;animation-duration:13s;">
 
     <p>🎉🎂🎉</p>
 
-    <h1>HAPPY BIRTHDAY</h1>
+    <h1>
+        Happy Birthday<br>
+        My Baby Girl 💖
+    </h1>
 
 </div>
 
@@ -400,6 +595,8 @@ style="left:90%;animation-duration:13s;">
 <button id="captureBtn">
 📸 Capture
 </button>
+
+<canvas id="snapshot"></canvas>
 
 <!-- MUSIC -->
 
@@ -437,13 +634,16 @@ document.getElementById("captureBtn");
 const snapshot =
 document.getElementById("snapshot");
 
+const topDecor =
+document.getElementById("topDecor");
+
 let blown = false;
 
 /* CONFETTI */
 
 function confetti(){
 
-    for(let i=0;i<150;i++){
+    for(let i=0;i<180;i++){
 
         const c =
         document.createElement("div");
@@ -479,7 +679,8 @@ function sparkle(){
     s.className =
     "sparkle";
 
-    s.innerHTML = "✨";
+    s.innerHTML =
+    "✨";
 
     s.style.left =
     Math.random()*100 + "vw";
@@ -511,7 +712,7 @@ function smoke(){
         "smoke";
 
         s.style.left =
-        candle.offsetLeft + "px";
+        "0px";
 
         candle.appendChild(s);
 
@@ -599,6 +800,9 @@ faceMesh.onResults(results=>{
             birthday.style.display =
             "block";
 
+            topDecor.style.display =
+            "block";
+
             confetti();
 
             music.play();
@@ -621,47 +825,59 @@ faceMesh.onResults(results=>{
 
 async function start(){
 
-    const stream =
-    await navigator
-    .mediaDevices
-    .getUserMedia({
+    try{
 
-        video:{
-            facingMode:"user",
+        const stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
+
+            video:{
+                facingMode:"user",
+                width:640,
+                height:480
+            },
+
+            audio:false
+        });
+
+        video.srcObject =
+        stream;
+
+        await video.play();
+
+        const camera =
+        new window.Camera(video,{
+
+            onFrame:async()=>{
+
+                await faceMesh.send({
+                    image:video
+                });
+            },
+
             width:640,
             height:480
-        },
+        });
 
-        audio:false
-    });
+        camera.start();
 
-    video.srcObject = stream;
+        message.innerHTML =
+        "Find a face...";
 
-    await video.play();
+    }catch(err){
 
-    const camera =
-    new window.Camera(video,{
+        console.log(err);
 
-        onFrame:async()=>{
-
-            await faceMesh.send({
-                image:video
-            });
-        },
-
-        width:640,
-        height:480
-    });
-
-    camera.start();
-
-    message.innerHTML =
-    "Find a face...";
+        alert(
+        "Camera permission denied"
+        );
+    }
 }
 
 start();
 
-/* SELFIE */
+/* CAPTURE */
 
 captureBtn.onclick = ()=>{
 
@@ -684,7 +900,7 @@ captureBtn.onclick = ()=>{
     document.createElement("a");
 
     link.download =
-    "birthday-filter.png";
+    "birthday-celebration.png";
 
     link.href =
     snapshot.toDataURL();
