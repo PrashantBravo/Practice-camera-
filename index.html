@@ -21,7 +21,7 @@ body{
     background:black;
 }
 
-/* CAMERA */
+/* VIDEO */
 
 video{
     position:fixed;
@@ -54,6 +54,66 @@ video{
     );
 }
 
+/* START BUTTON */
+
+#startBtn{
+
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:
+    translate(-50%,-50%);
+
+    z-index:999;
+
+    border:none;
+
+    background:
+    linear-gradient(
+    45deg,
+    hotpink,
+    deeppink
+    );
+
+    color:white;
+
+    padding:20px 35px;
+
+    font-size:24px;
+    font-weight:bold;
+
+    border-radius:60px;
+
+    box-shadow:
+    0 0 30px rgba(255,20,147,.6);
+
+    animation:
+    pulse 1s infinite;
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+    }
+
+    50%{
+        transform:
+        translate(-50%,-50%)
+        scale(1.05);
+    }
+
+    100%{
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+    }
+}
+
 /* MESSAGE */
 
 #message{
@@ -71,28 +131,6 @@ video{
 
     text-shadow:
     0 0 15px black;
-}
-
-/* BALLOONS */
-
-.balloon{
-    position:fixed;
-    bottom:-150px;
-
-    font-size:65px;
-
-    z-index:20;
-
-    animation:
-    floatUp linear infinite;
-}
-
-@keyframes floatUp{
-
-    to{
-        transform:
-        translateY(-120vh);
-    }
 }
 
 /* SPARKLES */
@@ -158,6 +196,30 @@ video{
         transform:
         translateY(-120vh)
         rotate(360deg);
+
+        opacity:0;
+    }
+}
+
+/* BALLOONS */
+
+.balloon{
+    position:fixed;
+
+    bottom:-150px;
+
+    z-index:240;
+
+    animation:
+    floatUp linear forwards;
+}
+
+@keyframes floatUp{
+
+    to{
+        transform:
+        translateY(-130vh)
+        rotate(10deg);
 
         opacity:0;
     }
@@ -518,84 +580,44 @@ video{
     }
 }
 
-/* DANCING CAT */
+/* REAL CAT */
 
 #cat{
 
     position:fixed;
 
-    bottom:30px;
-    right:20px;
+    bottom:10px;
+    right:10px;
 
-    font-size:95px;
+    width:170px;
 
-    z-index:400;
+    z-index:450;
 
     display:none;
 
+    pointer-events:none;
+
     filter:
-    drop-shadow(0 0 15px rgba(255,255,255,.5));
+    drop-shadow(0 0 20px rgba(255,255,255,.5));
 
     animation:
-    dance 1s infinite alternate,
-    glowCat 2s infinite alternate;
+    catBounce 1s infinite alternate;
 }
 
-@keyframes dance{
-
-    0%{
-
-        transform:
-        rotate(-12deg)
-        translateY(0)
-        scale(1);
-    }
-
-    25%{
-
-        transform:
-        rotate(12deg)
-        translateY(-10px)
-        scale(1.05);
-    }
-
-    50%{
-
-        transform:
-        rotate(-12deg)
-        translateY(0)
-        scale(1);
-    }
-
-    75%{
-
-        transform:
-        rotate(12deg)
-        translateY(-10px)
-        scale(1.05);
-    }
-
-    100%{
-
-        transform:
-        rotate(-12deg)
-        translateY(0)
-        scale(1);
-    }
-}
-
-@keyframes glowCat{
+@keyframes catBounce{
 
     from{
 
-        filter:
-        drop-shadow(0 0 10px hotpink);
+        transform:
+        translateY(0)
+        rotate(-5deg);
     }
 
     to{
 
-        filter:
-        drop-shadow(0 0 25px deeppink);
+        transform:
+        translateY(-12px)
+        rotate(5deg);
     }
 }
 
@@ -643,41 +665,20 @@ playsinline
 muted>
 </video>
 
-<!-- BEAUTY FILTER -->
+<!-- BEAUTY -->
 
 <div id="beautyGlow"></div>
+
+<!-- START -->
+
+<button id="startBtn">
+💖 Tap To Start
+</button>
 
 <!-- MESSAGE -->
 
 <div id="message">
-Loading Camera...
-</div>
-
-<!-- BALLOONS -->
-
-<div class="balloon"
-style="left:5%;animation-duration:12s;">
-🎈
-</div>
-
-<div class="balloon"
-style="left:25%;animation-duration:10s;">
-🎈
-</div>
-
-<div class="balloon"
-style="left:50%;animation-duration:14s;">
-🎈
-</div>
-
-<div class="balloon"
-style="left:75%;animation-duration:11s;">
-🎈
-</div>
-
-<div class="balloon"
-style="left:90%;animation-duration:13s;">
-🎈
+Tap start to begin
 </div>
 
 <!-- CAKE -->
@@ -723,13 +724,13 @@ style="left:90%;animation-duration:13s;">
 
 </div>
 
-<!-- DANCING CAT -->
+<!-- REAL CAT -->
 
-<div id="cat">
-😺🎉
-</div>
+<img
+id="cat"
+src="https://media.tenor.com/mCyh1xKQ6XgAAAAi/cat-dance.gif">
 
-<!-- BUTTON -->
+<!-- CAPTURE -->
 
 <button id="captureBtn">
 📸 Capture
@@ -745,7 +746,7 @@ loop
 preload="auto">
 
 <source
-src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3"
+src="music.mp3"
 type="audio/mpeg">
 
 </audio>
@@ -781,6 +782,9 @@ document.getElementById("snapshot");
 
 const cat =
 document.getElementById("cat");
+
+const startBtn =
+document.getElementById("startBtn");
 
 let blown = false;
 
@@ -841,6 +845,39 @@ function hearts(){
         setTimeout(()=>{
             h.remove();
         },7000);
+    }
+}
+
+/* BALLOONS AFTER BLOW */
+
+function balloons(){
+
+    for(let i=0;i<25;i++){
+
+        const b =
+        document.createElement("div");
+
+        b.className =
+        "balloon";
+
+        b.innerHTML =
+        ["🎈","🎉","💖","✨"]
+        [Math.floor(Math.random()*4)];
+
+        b.style.left =
+        Math.random()*100 + "vw";
+
+        b.style.animationDuration =
+        (Math.random()*5+6)+"s";
+
+        b.style.fontSize =
+        (Math.random()*40+40)+"px";
+
+        document.body.appendChild(b);
+
+        setTimeout(()=>{
+            b.remove();
+        },12000);
     }
 }
 
@@ -982,15 +1019,11 @@ faceMesh.onResults(results=>{
 
             hearts();
 
+            balloons();
+
             music.volume = .8;
 
-            music.play()
-            .catch(()=>{
-
-                console.log(
-                "Autoplay blocked"
-                );
-            });
+            music.play();
         }
 
     }else{
@@ -1060,7 +1093,22 @@ async function start(){
     }
 }
 
-start();
+/* START BUTTON */
+
+startBtn.onclick =
+async()=>{
+
+    startBtn.style.display =
+    "none";
+
+    await start();
+
+    music.play();
+
+    music.pause();
+
+    music.currentTime = 0;
+};
 
 /* CAPTURE */
 
