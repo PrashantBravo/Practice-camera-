@@ -1,39 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
 
-<title>Birthday AR Filter</title>
+<title>Birthday Camera Filter</title>
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
-}
-
 body{
+    margin:0;
     overflow:hidden;
     background:black;
+    font-family:Arial;
 }
 
-/* CAMERA */
-
-#video{
+video{
     position:fixed;
-    top:0;
-    left:0;
     width:100%;
     height:100%;
     object-fit:cover;
+    top:0;
+    left:0;
     transform:scaleX(-1);
 }
-
-/* MESSAGE */
 
 #message{
     position:fixed;
@@ -41,60 +32,43 @@ body{
     width:100%;
     text-align:center;
     color:white;
-    font-size:2.3rem;
+    font-size:2rem;
     font-weight:bold;
-    text-shadow:0 0 15px black;
     z-index:10;
+    text-shadow:0 0 10px black;
 }
-
-/* CAKE */
 
 #cakeContainer{
     position:fixed;
-    bottom:25px;
+    bottom:20px;
     left:50%;
     transform:translateX(-50%);
     display:none;
-    animation:float 2s ease-in-out infinite;
     z-index:10;
-}
-
-@keyframes float{
-    0%{
-        transform:translateX(-50%) translateY(0);
-    }
-
-    50%{
-        transform:translateX(-50%) translateY(-10px);
-    }
-
-    100%{
-        transform:translateX(-50%) translateY(0);
-    }
 }
 
 .candles{
     display:flex;
     justify-content:center;
-    gap:30px;
+    gap:25px;
     margin-bottom:-10px;
 }
 
 .candle{
-    width:14px;
-    height:55px;
+    width:12px;
+    height:50px;
     background:white;
-    border-radius:5px;
     position:relative;
+    border-radius:4px;
 }
 
 .flame{
     width:18px;
-    height:22px;
+    height:18px;
     background:orange;
     border-radius:50%;
     position:absolute;
-    top:-20px;
+    top:-18px;
     left:50%;
     transform:translateX(-50%);
     box-shadow:0 0 20px yellow;
@@ -112,26 +86,12 @@ body{
 }
 
 #cake{
-    width:280px;
-    height:130px;
-    background:linear-gradient(to bottom,#ff9ecb,#ff5ca8);
-    border-radius:25px;
-    position:relative;
-    overflow:hidden;
+    width:260px;
+    height:120px;
+    background:pink;
+    border-radius:20px;
+    border-bottom:10px solid hotpink;
 }
-
-#cake::before{
-    content:"";
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:30px;
-    background:#fff;
-    border-radius:50%;
-}
-
-/* HAPPY BIRTHDAY */
 
 #birthday{
     position:fixed;
@@ -142,7 +102,6 @@ body{
     text-align:center;
     display:none;
     z-index:20;
-    animation:pop 1s ease;
 }
 
 #birthday h1{
@@ -150,39 +109,19 @@ body{
     text-shadow:0 0 20px hotpink;
 }
 
-#birthday p{
-    font-size:5rem;
-}
-
-@keyframes pop{
-
-    from{
-        transform:translate(-50%,-50%) scale(0);
-        opacity:0;
-    }
-
-    to{
-        transform:translate(-50%,-50%) scale(1);
-        opacity:1;
-    }
-}
-
-/* CONFETTI */
-
 .confetti{
     position:fixed;
     width:10px;
     height:10px;
-    background:red;
     top:-10px;
     animation:fall linear forwards;
-    z-index:15;
 }
 
 @keyframes fall{
-
     to{
-        transform:translateY(110vh) rotate(720deg);
+        transform:
+        translateY(110vh)
+        rotate(720deg);
     }
 }
 
@@ -191,22 +130,16 @@ body{
 
 <body>
 
-<!-- CAMERA -->
-
 <video
-    id="video"
-    autoplay
-    muted
-    playsinline>
+id="video"
+autoplay
+playsinline
+muted>
 </video>
 
-<!-- MESSAGE -->
-
 <div id="message">
-    Loading AI...
+Loading Camera...
 </div>
-
-<!-- CAKE -->
 
 <div id="cakeContainer">
 
@@ -230,19 +163,17 @@ body{
 
 </div>
 
-<!-- BIRTHDAY -->
-
 <div id="birthday">
 
-    <p>🎉🎂🎉</p>
-
-    <h1>HAPPY BIRTHDAY</h1>
+    <h1>🎉 HAPPY BIRTHDAY 🎂</h1>
 
 </div>
 
-<!-- Tensorflow -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
 
@@ -262,179 +193,182 @@ document.getElementById("birthday");
 
 let model;
 
-let candlesBlown = false;
+let blown = false;
 
-/* START CAMERA */
+/* CAMERA */
 
 async function setupCamera(){
 
-    try{
+    const stream =
+    await navigator.mediaDevices
+    .getUserMedia({
 
-        const stream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
+        video:{
+            facingMode:"user",
+            width:640,
+            height:480
+        },
 
-            video:{
-                facingMode:"user"
-            },
+        audio:false
+    });
 
-            audio:false
-        });
+    video.srcObject = stream;
 
-        video.srcObject = stream;
+    await new Promise(resolve=>{
 
-        return new Promise(resolve=>{
+        video.onloadedmetadata = ()=>{
 
-            video.onloadedmetadata = ()=>{
+            resolve();
+        };
+    });
 
-                resolve(video);
-            };
-        });
-
-    }catch(error){
-
-        alert(
-            "Camera access denied"
-        );
-
-        console.log(error);
-    }
+    await video.play();
 }
 
-/* LOAD AI MODEL */
+/* LOAD AI */
 
-async function loadAI(){
+async function loadModel(){
+
+    await tf.setBackend("webgl");
+
+    await tf.ready();
 
     model =
     await blazeface.load();
 
     message.innerHTML =
-    "Find your face...";
+    "Find a face...";
 }
 
 /* CONFETTI */
 
-function createConfetti(){
+function confetti(){
 
-    for(let i=0;i<120;i++){
+    for(let i=0;i<80;i++){
 
-        const confetti =
+        const c =
         document.createElement("div");
 
-        confetti.classList.add("confetti");
+        c.className = "confetti";
 
-        confetti.style.left =
+        c.style.left =
         Math.random()*100 + "vw";
 
-        confetti.style.animationDuration =
+        c.style.animationDuration =
         (Math.random()*3+2)+"s";
 
-        confetti.style.opacity =
-        Math.random();
-
-        confetti.style.background =
+        c.style.background =
         `hsl(${Math.random()*360},
         100%,50%)`;
 
-        document.body.appendChild(
-            confetti
-        );
+        document.body.appendChild(c);
 
         setTimeout(()=>{
-
-            confetti.remove();
-
+            c.remove();
         },5000);
     }
 }
 
-/* DETECT FACE */
+/* DETECT */
 
-async function detectFace(){
+async function detect(){
 
-    const predictions =
-    await model.estimateFaces(
-        video,
-        false
-    );
+    if(
+        video.readyState === 4
+    ){
 
-    if(predictions.length > 0){
+        const predictions =
+        await model.estimateFaces(
+            video,
+            false
+        );
 
-        cakeContainer.style.display =
-        "block";
+        if(predictions.length > 0){
 
-        if(!candlesBlown){
+            cakeContainer.style.display =
+            "block";
 
-            message.innerHTML =
-            "Come closer & open mouth 🎂";
+            if(!blown){
 
-            const face =
-            predictions[0];
+                message.innerHTML =
+                "Move closer to blow 🎂";
 
-            const topLeft =
-            face.topLeft;
+                const face =
+                predictions[0];
 
-            const bottomRight =
-            face.bottomRight;
+                const top =
+                face.topLeft;
 
-            const faceHeight =
-            bottomRight[1] -
-            topLeft[1];
+                const bottom =
+                face.bottomRight;
 
-            /*
-            MOBILE FRIENDLY
-            SIMPLE BLOW DETECTION
-            */
+                const faceSize =
+                bottom[1] - top[1];
 
-            if(faceHeight > 320){
+                console.log(faceSize);
 
-                candlesBlown = true;
+                /*
+                EASY MOBILE TRIGGER
+                */
 
-                document
-                .querySelectorAll(".flame")
-                .forEach(flame=>{
+                if(faceSize > 180){
 
-                    flame.style.display =
+                    blown = true;
+
+                    document
+                    .querySelectorAll(".flame")
+                    .forEach(f=>{
+
+                        f.style.display =
+                        "none";
+                    });
+
+                    message.style.display =
                     "none";
-                });
 
-                message.style.display =
-                "none";
+                    birthday.style.display =
+                    "block";
 
-                birthday.style.display =
-                "block";
-
-                createConfetti();
+                    confetti();
+                }
             }
-        }
 
-    }else{
+        }else{
 
-        cakeContainer.style.display =
-        "none";
+            cakeContainer.style.display =
+            "none";
 
-        if(!candlesBlown){
+            if(!blown){
 
-            message.innerHTML =
-            "Find your face...";
+                message.innerHTML =
+                "Find a face...";
+            }
         }
     }
 
-    requestAnimationFrame(
-        detectFace
-    );
+    requestAnimationFrame(detect);
 }
 
-/* INIT */
+/* START */
 
 async function init(){
 
-    await setupCamera();
+    try{
 
-    await loadAI();
+        await setupCamera();
 
-    detectFace();
+        await loadModel();
+
+        detect();
+
+    }catch(err){
+
+        console.log(err);
+
+        alert(
+        "Camera or AI failed to load"
+        );
+    }
 }
 
 init();
