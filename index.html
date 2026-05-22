@@ -2,122 +2,211 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Birthday Face Filter</title>
+<title>Birthday Camera Filter</title>
 
 <style>
 
-body{
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
     overflow:hidden;
     background:black;
-    font-family:Arial;
 }
+
+/* CAMERA */
 
 video{
     position:fixed;
-    top:0;
-    left:0;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     transform:scaleX(-1);
 }
 
+/* MESSAGE */
+
 #message{
     position:fixed;
-    top:30px;
+    top:35px;
     width:100%;
     text-align:center;
     color:white;
     font-size:2rem;
     font-weight:bold;
     z-index:100;
-    text-shadow:0 0 10px black;
+    text-shadow:0 0 12px black;
 }
+
+/* FACE DETECTED GLOW */
+
+#faceGlow{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:20;
+    box-shadow:
+    inset 0 0 120px rgba(255,105,180,.3);
+    display:none;
+}
+
+/* CAKE */
 
 #cakeContainer{
     position:fixed;
-    bottom:20px;
+    bottom:25px;
     left:50%;
     transform:translateX(-50%);
-    display:none;
     z-index:100;
+    display:none;
+    animation:float 2s ease-in-out infinite;
+}
+
+@keyframes float{
+
+    0%{
+        transform:translateX(-50%)
+        translateY(0);
+    }
+
+    50%{
+        transform:translateX(-50%)
+        translateY(-10px);
+    }
+
+    100%{
+        transform:translateX(-50%)
+        translateY(0);
+    }
 }
 
 .candles{
     display:flex;
     justify-content:center;
-    gap:25px;
-    margin-bottom:-10px;
+    gap:30px;
+    margin-bottom:-8px;
 }
 
 .candle{
-    width:12px;
-    height:50px;
+    width:14px;
+    height:52px;
     background:white;
-    border-radius:4px;
+    border-radius:5px;
     position:relative;
 }
 
 .flame{
     width:18px;
-    height:18px;
+    height:22px;
     background:orange;
     border-radius:50%;
     position:absolute;
-    top:-18px;
+    top:-20px;
     left:50%;
     transform:translateX(-50%);
     box-shadow:0 0 20px yellow;
-    animation:flicker .2s infinite alternate;
+    animation:flicker .15s infinite alternate;
 }
 
 @keyframes flicker{
+
     from{
-        transform:translateX(-50%) scale(1);
+        transform:translateX(-50%)
+        scale(1);
     }
 
     to{
-        transform:translateX(-50%) scale(1.2);
+        transform:translateX(-50%)
+        scale(1.2);
     }
 }
 
 #cake{
-    width:260px;
-    height:120px;
-    background:pink;
-    border-radius:20px;
-    border-bottom:10px solid hotpink;
+    width:290px;
+    height:130px;
+    background:
+    linear-gradient(
+    to bottom,
+    #ff9ecb,
+    #ff5ea8
+    );
+
+    border-radius:25px;
+    border-bottom:10px solid #ff2f92;
+    position:relative;
 }
+
+#cake::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:28px;
+    background:white;
+    border-radius:50%;
+}
+
+/* BIRTHDAY */
 
 #birthday{
     position:fixed;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    color:white;
+    z-index:300;
     text-align:center;
+    color:white;
     display:none;
-    z-index:200;
+    animation:pop 1s ease;
 }
 
 #birthday h1{
-    font-size:3rem;
-    text-shadow:0 0 20px hotpink;
+    font-size:3.5rem;
+    text-shadow:0 0 25px hotpink;
 }
+
+#birthday p{
+    font-size:5rem;
+}
+
+@keyframes pop{
+
+    from{
+        transform:
+        translate(-50%,-50%)
+        scale(0);
+        opacity:0;
+    }
+
+    to{
+        transform:
+        translate(-50%,-50%)
+        scale(1);
+        opacity:1;
+    }
+}
+
+/* CONFETTI */
 
 .confetti{
     position:fixed;
-    width:10px;
-    height:10px;
+    width:12px;
+    height:12px;
     top:-10px;
+    z-index:200;
     animation:fall linear forwards;
 }
 
 @keyframes fall{
+
     to{
         transform:
         translateY(110vh)
@@ -130,6 +219,8 @@ video{
 
 <body>
 
+<!-- CAMERA -->
+
 <video
 id="video"
 autoplay
@@ -137,9 +228,17 @@ playsinline
 muted>
 </video>
 
+<!-- FACE GLOW -->
+
+<div id="faceGlow"></div>
+
+<!-- MESSAGE -->
+
 <div id="message">
-Loading AI...
+Loading Camera...
 </div>
+
+<!-- CAKE -->
 
 <div id="cakeContainer">
 
@@ -163,15 +262,21 @@ Loading AI...
 
 </div>
 
+<!-- HAPPY BIRTHDAY -->
+
 <div id="birthday">
 
-    <h1>🎉 HAPPY BIRTHDAY 🎂</h1>
+    <p>🎉🎂🎉</p>
+
+    <h1>HAPPY BIRTHDAY</h1>
 
 </div>
 
-<!-- FACE API -->
+<!-- MEDIAPIPE -->
 
-<script src="https://unpkg.com/face-api.js"></script>
+<script src="https://unpkg.com/@mediapipe/face_mesh/face_mesh.js"></script>
+
+<script src="https://unpkg.com/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
 
@@ -187,19 +292,21 @@ document.getElementById("cakeContainer");
 const birthday =
 document.getElementById("birthday");
 
+const faceGlow =
+document.getElementById("faceGlow");
+
 let blown = false;
 
 /* CONFETTI */
 
 function confetti(){
 
-    for(let i=0;i<100;i++){
+    for(let i=0;i<120;i++){
 
         const c =
         document.createElement("div");
 
-        c.className =
-        "confetti";
+        c.className = "confetti";
 
         c.style.left =
         Math.random()*100 + "vw";
@@ -219,99 +326,65 @@ function confetti(){
     }
 }
 
-/* CAMERA */
+/* FACE MESH */
 
-async function startCamera(){
+const faceMesh =
+new FaceMesh({
 
-    const stream =
-    await navigator
-    .mediaDevices
-    .getUserMedia({
+    locateFile:(file)=>{
 
-        video:{
-            facingMode:"user"
-        },
+        return `https://unpkg.com/@mediapipe/face_mesh/${file}`;
+    }
+});
 
-        audio:false
-    });
+faceMesh.setOptions({
 
-    video.srcObject =
-    stream;
-}
+    maxNumFaces:1,
 
-/* LOAD MODEL */
+    refineLandmarks:true,
 
-async function loadModels(){
+    minDetectionConfidence:0.5,
 
-    const MODEL_URL =
-    "https://justadudewhohacks.github.io/face-api.js/models";
+    minTrackingConfidence:0.5
+});
 
-    await faceapi.nets
-    .tinyFaceDetector
-    .loadFromUri(MODEL_URL);
+/* RESULTS */
 
-    await faceapi.nets
-    .faceLandmark68TinyNet
-    .loadFromUri(MODEL_URL);
+faceMesh.onResults(results=>{
 
-    message.innerHTML =
-    "Find a face...";
-}
+    if(
+        results.multiFaceLandmarks &&
+        results.multiFaceLandmarks.length > 0
+    ){
 
-/* MOUTH DETECTION */
-
-function getMouthRatio(
-landmarks
-){
-
-    const mouth =
-    landmarks.getMouth();
-
-    const top =
-    mouth[13];
-
-    const bottom =
-    mouth[19];
-
-    const left =
-    mouth[0];
-
-    const right =
-    mouth[6];
-
-    const vertical =
-    Math.abs(
-        bottom.y - top.y
-    );
-
-    const horizontal =
-    Math.abs(
-        right.x - left.x
-    );
-
-    return vertical /
-    horizontal;
-}
-
-/* DETECT */
-
-async function detect(){
-
-    const detection =
-    await faceapi
-    .detectSingleFace(
-        video,
-        new faceapi
-        .TinyFaceDetectorOptions()
-    )
-    .withFaceLandmarks(
-        true
-    );
-
-    if(detection){
+        faceGlow.style.display =
+        "block";
 
         cakeContainer.style.display =
         "block";
+
+        const landmarks =
+        results.multiFaceLandmarks[0];
+
+        /*
+        MOUTH POINTS
+        */
+
+        const upperLip =
+        landmarks[13];
+
+        const lowerLip =
+        landmarks[14];
+
+        /*
+        OPEN MOUTH DETECTION
+        */
+
+        const mouthOpen =
+        Math.abs(
+            lowerLip.y -
+            upperLip.y
+        );
 
         if(!blown){
 
@@ -319,15 +392,14 @@ async function detect(){
             "Open mouth to blow 🎂";
         }
 
-        const ratio =
-        getMouthRatio(
-            detection.landmarks
-        );
+        console.log(mouthOpen);
 
-        console.log(ratio);
+        /*
+        BLOW DETECTION
+        */
 
         if(
-            ratio > 0.30 &&
+            mouthOpen > 0.055 &&
             !blown
         ){
 
@@ -335,9 +407,9 @@ async function detect(){
 
             document
             .querySelectorAll(".flame")
-            .forEach(f=>{
+            .forEach(flame=>{
 
-                f.style.display =
+                flame.style.display =
                 "none";
             });
 
@@ -352,6 +424,9 @@ async function detect(){
 
     }else{
 
+        faceGlow.style.display =
+        "none";
+
         cakeContainer.style.display =
         "none";
 
@@ -361,35 +436,63 @@ async function detect(){
             "Find a face...";
         }
     }
+});
 
-    requestAnimationFrame(
-        detect
-    );
-}
+/* START CAMERA */
 
-/* START */
-
-async function init(){
+async function start(){
 
     try{
 
-        await startCamera();
+        const stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
 
-        await loadModels();
+            video:{
+                facingMode:"user",
+                width:640,
+                height:480
+            },
 
-        detect();
+            audio:false
+        });
+
+        video.srcObject =
+        stream;
+
+        await video.play();
+
+        const camera =
+        new Camera(video,{
+
+            onFrame:async()=>{
+
+                await faceMesh.send({
+                    image:video
+                });
+            },
+
+            width:640,
+            height:480
+        });
+
+        camera.start();
+
+        message.innerHTML =
+        "Find a face...";
 
     }catch(err){
 
         console.log(err);
 
         alert(
-        "Model failed to load"
+        "Camera permission denied"
         );
     }
 }
 
-init();
+start();
 
 </script>
 
