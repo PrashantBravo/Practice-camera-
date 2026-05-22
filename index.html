@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
 
-<title>Birthday Filter</title>
+<title>Birthday Face Filter</title>
 
 <style>
 
@@ -17,11 +18,11 @@ body{
 
 video{
     position:fixed;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
     object-fit:cover;
-    top:0;
-    left:0;
     transform:scaleX(-1);
 }
 
@@ -168,13 +169,9 @@ Loading AI...
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+<!-- FACE API -->
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+<script src="https://unpkg.com/face-api.js"></script>
 
 <script>
 
@@ -189,8 +186,6 @@ document.getElementById("cakeContainer");
 
 const birthday =
 document.getElementById("birthday");
-
-let model;
 
 let blown = false;
 
@@ -226,10 +221,11 @@ function confetti(){
 
 /* CAMERA */
 
-async function setupCamera(){
+async function startCamera(){
 
     const stream =
-    await navigator.mediaDevices
+    await navigator
+    .mediaDevices
     .getUserMedia({
 
         video:{
@@ -239,50 +235,80 @@ async function setupCamera(){
         audio:false
     });
 
-    video.srcObject = stream;
-
-    return new Promise(resolve=>{
-
-        video.onloadedmetadata = ()=>{
-
-            resolve(video);
-        };
-    });
+    video.srcObject =
+    stream;
 }
 
 /* LOAD MODEL */
 
-async function loadModel(){
+async function loadModels(){
 
-    await tf.setBackend("webgl");
+    const MODEL_URL =
+    "https://justadudewhohacks.github.io/face-api.js/models";
 
-    await tf.ready();
+    await faceapi.nets
+    .tinyFaceDetector
+    .loadFromUri(MODEL_URL);
 
-    model =
-    await faceLandmarksDetection
-    .load(
-        faceLandmarksDetection
-        .SupportedPackages
-        .mediapipeFacemesh
-    );
-
-    console.log("MODEL LOADED");
+    await faceapi.nets
+    .faceLandmark68TinyNet
+    .loadFromUri(MODEL_URL);
 
     message.innerHTML =
     "Find a face...";
+}
+
+/* MOUTH DETECTION */
+
+function getMouthRatio(
+landmarks
+){
+
+    const mouth =
+    landmarks.getMouth();
+
+    const top =
+    mouth[13];
+
+    const bottom =
+    mouth[19];
+
+    const left =
+    mouth[0];
+
+    const right =
+    mouth[6];
+
+    const vertical =
+    Math.abs(
+        bottom.y - top.y
+    );
+
+    const horizontal =
+    Math.abs(
+        right.x - left.x
+    );
+
+    return vertical /
+    horizontal;
 }
 
 /* DETECT */
 
 async function detect(){
 
-    const predictions =
-    await model.estimateFaces({
+    const detection =
+    await faceapi
+    .detectSingleFace(
+        video,
+        new faceapi
+        .TinyFaceDetectorOptions()
+    )
+    .withFaceLandmarks(
+        true
+    );
 
-        input:video
-    });
-
-    if(predictions.length > 0){
+    if(detection){
 
         cakeContainer.style.display =
         "block";
@@ -293,29 +319,15 @@ async function detect(){
             "Open mouth to blow 🎂";
         }
 
-        const keypoints =
-        predictions[0].scaledMesh;
-
-        /*
-        lips
-        */
-
-        const upperLip =
-        keypoints[13];
-
-        const lowerLip =
-        keypoints[14];
-
-        const mouthOpen =
-        Math.abs(
-            lowerLip[1] -
-            upperLip[1]
+        const ratio =
+        getMouthRatio(
+            detection.landmarks
         );
 
-        console.log(mouthOpen);
+        console.log(ratio);
 
         if(
-            mouthOpen > 18 &&
+            ratio > 0.30 &&
             !blown
         ){
 
@@ -350,18 +362,20 @@ async function detect(){
         }
     }
 
-    requestAnimationFrame(detect);
+    requestAnimationFrame(
+        detect
+    );
 }
 
 /* START */
 
-async function start(){
+async function init(){
 
     try{
 
-        await setupCamera();
+        await startCamera();
 
-        await loadModel();
+        await loadModels();
 
         detect();
 
@@ -369,11 +383,13 @@ async function start(){
 
         console.log(err);
 
-        alert("AI failed to load");
+        alert(
+        "Model failed to load"
+        );
     }
 }
 
-start();
+init();
 
 </script>
 
