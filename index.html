@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
 
-<title>Birthday AR Celebration</title>
+<title>Romantic Birthday AR</title>
 
 <style>
 
@@ -33,8 +33,9 @@ video{
 
     filter:
     brightness(1.05)
-    contrast(1.05)
-    saturate(1.15);
+    contrast(1.08)
+    saturate(1.15)
+    blur(.2px);
 }
 
 /* BEAUTY FILTER */
@@ -60,59 +61,16 @@ video{
     top:35px;
     width:100%;
     text-align:center;
+
     color:white;
+
     font-size:2rem;
     font-weight:bold;
+
     z-index:200;
-    text-shadow:0 0 15px black;
-}
 
-/* TOP CELEBRATION */
-
-#topDecor{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:120px;
-    z-index:150;
-    pointer-events:none;
-    display:none;
-    overflow:hidden;
-}
-
-.partyLine{
-    position:absolute;
-    top:10px;
-    width:100%;
-    text-align:center;
-    font-size:45px;
-
-    animation:
-    swing 2s infinite ease-in-out;
-}
-
-@keyframes swing{
-
-    0%{
-        transform:rotate(0deg);
-    }
-
-    25%{
-        transform:rotate(1deg);
-    }
-
-    50%{
-        transform:rotate(0deg);
-    }
-
-    75%{
-        transform:rotate(-1deg);
-    }
-
-    100%{
-        transform:rotate(0deg);
-    }
+    text-shadow:
+    0 0 15px black;
 }
 
 /* BALLOONS */
@@ -120,7 +78,9 @@ video{
 .balloon{
     position:fixed;
     bottom:-150px;
+
     font-size:65px;
+
     z-index:20;
 
     animation:
@@ -135,12 +95,15 @@ video{
     }
 }
 
-/* FACE SPARKLES */
+/* SPARKLES */
 
 .sparkle{
     position:fixed;
+
     font-size:22px;
+
     z-index:30;
+
     pointer-events:none;
 
     animation:
@@ -151,6 +114,7 @@ video{
 
     0%{
         opacity:0;
+
         transform:
         translateY(0)
         scale(0);
@@ -158,6 +122,7 @@ video{
 
     50%{
         opacity:1;
+
         transform:
         translateY(-10px)
         scale(1);
@@ -165,9 +130,36 @@ video{
 
     100%{
         opacity:0;
+
         transform:
         translateY(-20px)
         scale(0);
+    }
+}
+
+/* HEARTS */
+
+.heart{
+    position:fixed;
+
+    bottom:-50px;
+
+    font-size:35px;
+
+    z-index:260;
+
+    animation:
+    heartFloat linear forwards;
+}
+
+@keyframes heartFloat{
+
+    to{
+        transform:
+        translateY(-120vh)
+        rotate(360deg);
+
+        opacity:0;
     }
 }
 
@@ -175,10 +167,15 @@ video{
 
 #cakeContainer{
     position:fixed;
+
     bottom:120px;
     left:50%;
-    transform:translateX(-50%);
+
+    transform:
+    translateX(-50%);
+
     z-index:100;
+
     display:none;
 
     animation:
@@ -211,31 +208,44 @@ video{
 .candles{
     display:flex;
     justify-content:center;
+
     gap:40px;
+
     margin-bottom:-10px;
+
     position:relative;
+
     z-index:5;
 }
 
 .candle{
     width:16px;
     height:70px;
+
     background:white;
+
     border-radius:5px;
+
     position:relative;
 }
 
-/* FLAMES */
+/* FLAME */
 
 .flame{
     width:22px;
     height:28px;
+
     background:orange;
+
     border-radius:50%;
+
     position:absolute;
+
     top:-25px;
     left:50%;
-    transform:translateX(-50%);
+
+    transform:
+    translateX(-50%);
 
     box-shadow:
     0 0 20px yellow,
@@ -264,6 +274,7 @@ video{
 
 .smoke{
     position:absolute;
+
     width:20px;
     height:20px;
 
@@ -287,10 +298,11 @@ video{
     }
 }
 
-/* DOUBLE LAYER CAKE */
+/* DOUBLE CAKE */
 
 #cake{
     position:relative;
+
     width:360px;
     height:240px;
 }
@@ -299,7 +311,9 @@ video{
 
 #cake::before{
     content:"";
+
     position:absolute;
+
     bottom:0;
     left:0;
 
@@ -326,7 +340,9 @@ video{
 
 #cake::after{
     content:"";
+
     position:absolute;
+
     top:0;
     left:50%;
 
@@ -353,6 +369,7 @@ video{
 
 .cakeCream1{
     position:absolute;
+
     top:85px;
     left:0;
 
@@ -362,11 +379,13 @@ video{
     background:white;
 
     border-radius:50%;
+
     z-index:3;
 }
 
 .cakeCream2{
     position:absolute;
+
     top:0;
     left:50%;
 
@@ -379,13 +398,15 @@ video{
     background:white;
 
     border-radius:50%;
+
     z-index:3;
 }
 
-/* BIRTHDAY TEXT */
+/* ROMANTIC TEXT */
 
 #birthday{
     position:fixed;
+
     top:50%;
     left:50%;
 
@@ -395,42 +416,80 @@ video{
     z-index:300;
 
     text-align:center;
-    color:white;
 
     display:none;
 
     animation:
-    pop 1s ease;
+    romanticPop 1.5s ease;
 }
 
 #birthday h1{
+
     font-size:4rem;
-    line-height:1.2;
+
+    line-height:1.3;
+
+    font-weight:700;
+
+    background:
+    linear-gradient(
+    45deg,
+    #ffb6d9,
+    #ff69b4,
+    #ffd6ec
+    );
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:
+    transparent;
 
     text-shadow:
-    0 0 25px hotpink;
+    0 0 20px rgba(255,105,180,.7),
+    0 0 40px rgba(255,182,193,.6);
 }
 
 #birthday p{
+
     font-size:6rem;
+
+    animation:
+    heartBeat 1s infinite;
 }
 
-@keyframes pop{
+@keyframes romanticPop{
 
     from{
-        transform:
-        translate(-50%,-50%)
-        scale(0);
 
         opacity:0;
+
+        transform:
+        translate(-50%,-50%)
+        scale(.4);
     }
 
     to{
+
+        opacity:1;
+
         transform:
         translate(-50%,-50%)
         scale(1);
+    }
+}
 
-        opacity:1;
+@keyframes heartBeat{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.15);
+    }
+
+    100%{
+        transform:scale(1);
     }
 }
 
@@ -438,9 +497,12 @@ video{
 
 .confetti{
     position:fixed;
+
     width:12px;
     height:12px;
+
     top:-10px;
+
     z-index:250;
 
     animation:
@@ -456,12 +518,95 @@ video{
     }
 }
 
+/* DANCING CAT */
+
+#cat{
+
+    position:fixed;
+
+    bottom:30px;
+    right:20px;
+
+    font-size:95px;
+
+    z-index:400;
+
+    display:none;
+
+    filter:
+    drop-shadow(0 0 15px rgba(255,255,255,.5));
+
+    animation:
+    dance 1s infinite alternate,
+    glowCat 2s infinite alternate;
+}
+
+@keyframes dance{
+
+    0%{
+
+        transform:
+        rotate(-12deg)
+        translateY(0)
+        scale(1);
+    }
+
+    25%{
+
+        transform:
+        rotate(12deg)
+        translateY(-10px)
+        scale(1.05);
+    }
+
+    50%{
+
+        transform:
+        rotate(-12deg)
+        translateY(0)
+        scale(1);
+    }
+
+    75%{
+
+        transform:
+        rotate(12deg)
+        translateY(-10px)
+        scale(1.05);
+    }
+
+    100%{
+
+        transform:
+        rotate(-12deg)
+        translateY(0)
+        scale(1);
+    }
+}
+
+@keyframes glowCat{
+
+    from{
+
+        filter:
+        drop-shadow(0 0 10px hotpink);
+    }
+
+    to{
+
+        filter:
+        drop-shadow(0 0 25px deeppink);
+    }
+}
+
 /* CAPTURE BUTTON */
 
 #captureBtn{
     position:fixed;
+
     bottom:20px;
-    right:20px;
+    left:20px;
+
     z-index:500;
 
     border:none;
@@ -479,8 +624,6 @@ video{
     box-shadow:
     0 0 20px rgba(0,0,0,.4);
 }
-
-/* HIDDEN CANVAS */
 
 #snapshot{
     display:none;
@@ -508,16 +651,6 @@ muted>
 
 <div id="message">
 Loading Camera...
-</div>
-
-<!-- TOP CELEBRATION -->
-
-<div id="topDecor">
-
-    <div class="partyLine">
-        🎉 ✨ 🎈 HAPPY BIRTHDAY 🎈 ✨ 🎉
-    </div>
-
 </div>
 
 <!-- BALLOONS -->
@@ -581,16 +714,22 @@ style="left:90%;animation-duration:13s;">
 
 <div id="birthday">
 
-    <p>🎉🎂🎉</p>
+    <p>💖</p>
 
     <h1>
         Happy Birthday<br>
-        My Baby Girl 💖
+        My Baby Girl
     </h1>
 
 </div>
 
-<!-- CAPTURE -->
+<!-- DANCING CAT -->
+
+<div id="cat">
+😺🎉
+</div>
+
+<!-- BUTTON -->
 
 <button id="captureBtn">
 📸 Capture
@@ -602,7 +741,13 @@ style="left:90%;animation-duration:13s;">
 
 <audio
 id="music"
-src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=happy-birthday-to-you-piano-version-13976.mp3">
+loop
+preload="auto">
+
+<source
+src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3"
+type="audio/mpeg">
+
 </audio>
 
 <!-- MEDIAPIPE -->
@@ -634,8 +779,8 @@ document.getElementById("captureBtn");
 const snapshot =
 document.getElementById("snapshot");
 
-const topDecor =
-document.getElementById("topDecor");
+const cat =
+document.getElementById("cat");
 
 let blown = false;
 
@@ -666,6 +811,36 @@ function confetti(){
         setTimeout(()=>{
             c.remove();
         },5000);
+    }
+}
+
+/* HEARTS */
+
+function hearts(){
+
+    for(let i=0;i<40;i++){
+
+        const h =
+        document.createElement("div");
+
+        h.className =
+        "heart";
+
+        h.innerHTML =
+        Math.random() > .5 ?
+        "💖" : "💕";
+
+        h.style.left =
+        Math.random()*100 + "vw";
+
+        h.style.animationDuration =
+        (Math.random()*4+3)+"s";
+
+        document.body.appendChild(h);
+
+        setTimeout(()=>{
+            h.remove();
+        },7000);
     }
 }
 
@@ -722,7 +897,7 @@ function smoke(){
     });
 }
 
-/* FACE MESH */
+/* FACEMESH */
 
 const faceMesh =
 new window.FaceMesh({
@@ -800,12 +975,22 @@ faceMesh.onResults(results=>{
             birthday.style.display =
             "block";
 
-            topDecor.style.display =
+            cat.style.display =
             "block";
 
             confetti();
 
-            music.play();
+            hearts();
+
+            music.volume = .8;
+
+            music.play()
+            .catch(()=>{
+
+                console.log(
+                "Autoplay blocked"
+                );
+            });
         }
 
     }else{
@@ -900,7 +1085,7 @@ captureBtn.onclick = ()=>{
     document.createElement("a");
 
     link.download =
-    "birthday-celebration.png";
+    "romantic-birthday.png";
 
     link.href =
     snapshot.toDataURL();
