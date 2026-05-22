@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Birthday AR Filter</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body{
+        overflow:hidden;
+        background:black;
+    }
+
+    #container{
+        position:relative;
+        width:100vw;
+        height:100vh;
+        overflow:hidden;
+    }
+
+    video{
+        position:absolute;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        transform: scaleX(-1);
+    }
+
+    canvas{
+        position:absolute;
+        width:100%;
+        height:100%;
+        pointer-events:none;
+    }
+
+    #cakeContainer{
+        position:absolute;
+        bottom:30px;
+        left:50%;
+        transform:translateX(-50%);
+        width:300px;
+        display:none;
+        animation: float 2s infinite ease-in-out;
+    }
+
+    @keyframes float{
+        0%{transform:translateX(-50%) translateY(0px);}
+        50%{transform:translateX(-50%) translateY(-8px);}
+        100%{transform:translateX(-50%) translateY(0px);}
+    }
+
+    .cake{
+        width:300px;
+        height:140px;
+        background:#ff80ab;
+        border-radius:20px;
+        position:relative;
+        border-bottom:10px solid #ff4081;
+    }
+
+    .cake::before{
+        content:'';
+        position:absolute;
+        top:-40px;
+        left:20px;
+        width:260px;
+        height:50px;
+        background:#ffb6c1;
+        border-radius:50%;
+    }
+
+    .candles{
+        position:absolute;
+        top:-80px;
+        width:100%;
+        display:flex;
+        justify-content:space-evenly;
+    }
+
+    .candle{
+        width:12px;
+        height:50px;
+        background:white;
+        position:relative;
+        border-radius:4px;
+    }
+
+    .flame{
+        width:16px;
+        height:22px;
+        background:orange;
+        border-radius:50%;
+        position:absolute;
+        top:-20px;
+        left:50%;
+        transform:translateX(-50%);
+        box-shadow:0 0 20px yellow;
+        animation:flicker 0.2s infinite alternate;
+    }
+
+    @keyframes flicker{
+        from{transform:translateX(-50%) scale(1);}
+        to{transform:translateX(-50%) scale(1.1);}
+    }
+
+    .hidden{
+        display:none;
+    }
+
+    #message{
+        position:absolute;
+        top:40px;
+        width:100%;
+        text-align:center;
+        color:white;
+        font-size:2rem;
+        font-weight:bold;
+        text-shadow:0 0 10px black;
+    }
+
+    #birthday{
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        font-size:4rem;
+        color:#fff;
+        text-align:center;
+        display:none;
+        animation: pop 1s ease forwards;
+        text-shadow:0 0 20px hotpink;
+    }
+
+    @keyframes pop{
+        from{
+            transform:translate(-50%,-50%) scale(0.5);
+            opacity:0;
+        }
+        to{
+            transform:translate(-50%,-50%) scale(1);
+            opacity:1;
+        }
+    }
+
+    #emoji{
+        font-size:5rem;
+    }
+</style>
+</head>
+
+<body>
+
+<div id="container">
+
+    <video id="video" autoplay playsinline muted></video>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="message">
+        Find a face...
+    </div>
+
+    <div id="cakeContainer">
+        <div class="candles">
+            <div class="candle">
+                <div class="flame"></div>
+            </div>
+
+            <div class="candle">
+                <div class="flame"></div>
+            </div>
+
+            <div class="candle">
+                <div class="flame"></div>
+            </div>
+        </div>
+
+        <div class="cake"></div>
+    </div>
+
+    <div id="birthday">
+        <div id="emoji">🎉🎂🎉</div>
+        HAPPY BIRTHDAY!
+    </div>
+
+</div>
+
+<!-- FACE API -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
+<script>
+const video = document.getElementById('video');
+const message = document.getElementById('message');
+const cakeContainer = document.getElementById('cakeContainer');
+const birthday = document.getElementById('birthday');
+
+let blown = false;
+
+async function startCamera(){
+    try{
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video:{
+                facingMode:"user"
+            },
+            audio:false
+        });
+
+        video.srcObject = stream;
+
+    }catch(err){
+        alert("Camera access denied!");
+    }
+}
+
+async function loadModels(){
+    await faceapi.nets.tinyFaceDetector.loadFromUri(
+        'https://cdn.jsdelivr.net/npm/face-api.js/weights'
+    );
+
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(
+        'https://cdn.jsdelivr.net/npm/face-api.js/weights'
+    );
+}
+
+function mouthOpenRatio(landmarks){
+
+    const mouth = landmarks.getMouth();
+
+    const topLip = mouth[13];
+    const bottomLip = mouth[19];
+
+    const left = mouth[0];
+    const right = mouth[6];
+
+    const vertical =
+        Math.abs(bottomLip.y - topLip.y);
+
+    const horizontal =
+        Math.abs(right.x - left.x);
+
+    return vertical / horizontal;
+}
+
+video.addEventListener('play', ()=>{
+
+    const interval = setInterval(async()=>{
+
+        const detections =
+            await faceapi
+            .detectSingleFace(
+                video,
+                new faceapi.TinyFaceDetectorOptions()
+            )
+            .withFaceLandmarks(true);
+
+        if(detections){
+
+            cakeContainer.style.display = "block";
+
+            if(!blown){
+                message.innerHTML =
+                    "Blow the candles 🎂";
+
+                const ratio =
+                    mouthOpenRatio(detections.landmarks);
+
+                if(ratio > 0.35){
+
+                    blown = true;
+
+                    document
+                    .querySelectorAll('.flame')
+                    .forEach(f=>{
+                        f.classList.add('hidden');
+                    });
+
+                    message.style.display = "none";
+
+                    setTimeout(()=>{
+                        birthday.style.display = "block";
+                    },500);
+                }
+            }
+
+        }else{
+
+            cakeContainer.style.display = "none";
+
+            if(!blown){
+                message.innerHTML =
+                    "Find a face...";
+            }
+        }
+
+    },300);
+});
+
+(async()=>{
+
+    await startCamera();
+
+    await loadModels();
+
+})();
+</script>
+
+</body>
+</html>
